@@ -33,8 +33,8 @@ export default function LogsPage() {
       )}
 
       <button
-        onClick={() => router.push('/')} // 投稿画面のURLに合わせてね
-        className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+        onClick={() => router.push('/')}
+        style={{ backgroundColor: 'blue', color: 'white', padding: '10px 20px', borderRadius: '5px', marginTop: '20px', cursor: 'pointer' }}
       >
         新しく投稿する
       </button>
