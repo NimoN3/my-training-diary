@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { saveLog } from '@/lib/saveLog';  // ← ここを追加
 
 type Entry = {
   date: string;
@@ -18,26 +19,25 @@ export default function ConfirmPage() {
     }
   }, []);
 
-  const handleSubmit = () => {
-  if (!entry) return;
+  // ここを async 関数に変更！
+  const handleSubmit = async () => {
+    if (!entry) return;
 
-  const existing = JSON.parse(localStorage.getItem('logEntries') || '[]');
-  const editMode = localStorage.getItem('editMode');
-  const editIndex = parseInt(localStorage.getItem('editIndex') || '-1');
+    // Supabaseに保存する
+    const { data, error } = await saveLog(entry);
 
-  if (editMode && !isNaN(editIndex)) {
-    existing[editIndex] = entry;
-  } else {
-    existing.push(entry);
-  }
+    if (error) {
+      alert('保存に失敗しました。もう一度試してください。');
+      return;
+    }
 
-  localStorage.setItem('logEntries', JSON.stringify(existing));
-  localStorage.removeItem('tempEntry');
-  localStorage.removeItem('editMode');
-  localStorage.removeItem('editIndex');
+    // 保存成功したらローカルの仮保存を消してリダイレクト
+    localStorage.removeItem('tempEntry');
+    localStorage.removeItem('editMode');
+    localStorage.removeItem('editIndex');
 
-  router.push('/logs');
-};
+    router.push('/logs');
+  };
 
   if (!entry) return <p>読み込み中...</p>;
 
